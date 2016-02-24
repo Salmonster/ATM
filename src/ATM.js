@@ -5,7 +5,7 @@ angular.module("ATM", [])
     $scope.auth = { 
       pin: "",
       verified: false,
-      balance: 90000,
+      balance: 80000,
       amount: ""
     };
   })

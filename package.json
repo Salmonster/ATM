@@ -1,0 +1,34 @@
+{
+  "name": "Angular_ATM",
+  "version": "0.0.1",
+  "description": "A rudimentary automated teller machine written in Angular and Express",
+  "engines": {
+    "node": "5.0.0"
+  },
+  "main": "server/server.js",
+  "scripts": {
+    "start": "./node_modules/.bin/nodemon server/",
+    "test": "./spec/run.sh"
+  },
+  "author": "Salman Oskooi <soskooi@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "express": "^4.12.4"
+  },
+  "devDependencies": {
+    "chai": "^3.4.0",
+    "mocha": "^2.3.3",
+    "nodemon": "^1.3.7",
+    "supertest": "^1.1.0",
+    "supertest-as-promised": "^2.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Salmonster/ATM"
+  },
+  "bugs": {
+    "url": "https://github.com/Salmonster/ATM/issues"
+  },
+  "homepage": "https://github.com/Salmonster/ATM"
+}
