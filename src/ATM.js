@@ -1,23 +1,38 @@
 
-angular.module('count', [])
-  // You'll need to create a means of persistent counting between your three controllers
-
-  // This controller will only be displaying the current count
-  // In the view, it looks like: <h1> {{ count.number }} </h1>
-  .controller('countCtrl', function($scope) {
-    $scope.count = {};
-    $scope.count.number = 1;
+angular.module("ATM", [])
+  // Keeping everything within this module will persist the account balance between controllers
+  .controller("transact", function($scope) {
+    $scope.auth = { 
+      pin: "",
+      verified: false,
+      balance: 90000,
+      amount: ""
+    };
   })
-  // This controller will increment the count
-  // In the view, the incrementing is done through ng-click as an expression: ng-click="count.number = count.number + 1"
-  .controller('incrCtrl', function($scope) {
-
-  })
-  // This controller will decrement the count
-  // In the view, the decrementing is done through ng-click as a function: ng-click="decrement()"
-  .controller('decrCtrl', function($scope) {
-    $scope.decrement = function() {
-      $scope.count.number--;
+  .controller("submitPin", function($scope, $log) {
+    //For simplicity's sake, I'm hardcoding a PIN of 1111
+    $scope.verifyPin = function() {
+      $log.log("$scope.auth.pin:", $scope.auth.pin);
+      if ($scope.auth.pin === "1111") {
+        $scope.auth.verified = true;
+      } else {
+        alert("Incorrect PIN");
+      }
     }
-
+  })
+  .controller("submitDeposit", function($scope) {
+    $scope.deposit = function() {
+      $scope.auth.balance += Number($scope.auth.amount);
+      $scope.auth.amount = "";
+    }
+  })
+  .controller("submitWithdrawal", function($scope) {
+    $scope.withdraw = function() {
+      if ($scope.auth.balance - Number($scope.auth.amount) < 0) {
+        alert("Insufficient Funds");
+      } else {
+        $scope.auth.balance -= Number($scope.auth.amount);
+      }
+      $scope.auth.amount = "";
+    }
   });

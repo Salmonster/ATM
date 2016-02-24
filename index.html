@@ -2,13 +2,25 @@
 <html>
     <head>
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
-        <script src="./ng-count.js"></script>
+        <script src="./src/ATM.js"></script>
     </head>
 <body>
-    <div ng-app="count" ng-controller="countCtrl">
-        <h1> {{ count.number }} </h1>
-        <button ng-controller="incrCtrl" ng-click="count.number = count.number + 1">Increment!</button>
-        <button ng-controller="decrCtrl" ng-click="decrement()">Decrement!</button>
+    <div ng-app="ATM" ng-controller="transact">
+        <h1>Hello, Welcome to Angular ATM</h1>
+        <input type="text" placeholder="Enter 4-digit PIN" 
+               ng-model="auth.pin" ng-hide="auth.verified">
+        <h1 ng-show="auth.verified"> Your balance is: ${{ auth.balance }} </h1>
+        <input type="text" placeholder="Enter an amount"
+               ng-model="auth.amount" ng-show="auth.verified">
+        <button ng-controller="submitPin" ng-click="verifyPin()" ng-hide="auth.verified">
+            Submit PIN
+        </button>
+        <button ng-controller="submitDeposit" ng-click="deposit()" ng-show="auth.verified">
+            Deposit this Amount
+        </button>
+        <button ng-controller="submitWithdrawal" ng-click="withdraw()" ng-show="auth.verified">
+            Withdraw this Amount
+        </button>
     </div>
 </body>
 </html>
