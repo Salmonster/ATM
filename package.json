@@ -7,7 +7,7 @@
   },
   "main": "server/server.js",
   "scripts": {
-    "start": "./node_modules/.bin/nodemon server/",
+    "start": "./node_modules/.bin/nodemon server/server.js",
     "test": "./spec/run.sh"
   },
   "author": "Salman Oskooi <soskooi@gmail.com>",
