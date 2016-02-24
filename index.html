@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+        <script src="./ng-count.js"></script>
+    </head>
+<body>
+    <div ng-app="count" ng-controller="countCtrl">
+        <h1> {{ count.number }} </h1>
+        <button ng-controller="incrCtrl" ng-click="count.number = count.number + 1">Increment!</button>
+        <button ng-controller="decrCtrl" ng-click="decrement()">Decrement!</button>
+    </div>
+</body>
+</html>
