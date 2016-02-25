@@ -18,10 +18,8 @@ angular.module("ATM", [])
           alert("Sorry, that PIN does not exist.");
         } else {
           $scope.$apply(function() {
-            console.log("res.body:", res.body);
             $scope.auth.balance = res.body.balance;
             $scope.auth.verified = true;
-            console.log("$scope.auth.verified:", $scope.auth.verified);
           })
         }
       })

@@ -1,54 +1,40 @@
 var expect = require("chai").expect;
 var request = require("request");
-var db = require("../src/config");
+var testDB = require("./testconfig");
+var server = require("../server/server");
 
+var app;
 
 describe("", function() {
 
-  beforeEach(function() {
-    // delete user Svnh from db so it can be created later for the test
-    db.knex("users")
-      .where("username", "=", "Svnh")
-      .del()
-      .catch(function(error) {
-        // uncomment when writing authentication tests
-        throw {
-          type: "DatabaseError",
-          message: "Failed to create test setup data"
-        };
-      });
+  before(function() {
+    app = server(testDB);
+  })
 
+  after(function() {
+    app.close();
+  })
 
-  describe("Account Creation:", function(){
+  describe("Check account balance", function(){
 
-    it("Signup creates a user record", function(done) {
+    it("accepts a PIN to retrieve associated balance amount", function(done) {
       var options = {
-        "method": "POST",
-        "uri": "http://127.0.0.1:4568/signup",
-        "json": {
-          "username": "Svnh",
-          "password": "Svnh"
-        }
+        "method": "GET",
+        "uri": "http://localhost:4000/api/balance?pin=1111",
       };
 
       request(options, function(error, res, body) {
-        db.knex("users")
-          .where("username", "=", "Svnh")
-          .then(function(res) {
-            if (res[0] && res[0]["username"]) {
-              var user = res[0]["username"];
-            }
-            expect(user).to.equal("Svnh");
+        testDB("pins")
+          .where("pin", "=", "1111")
+          .asCallback(function(err, rows) {
+            console.log("rows:", rows);
+            console.log("body:", body);
+            expect(rows[0].amount).to.equal(JSON.parse(body).balance);
             done();
-          }).catch(function(err) {
-            throw {
-              type: "DatabaseError",
-              message: "Failed to create test setup data"
-            };
-          });
-        });
+          })
       });
-    })
+    });
 
-  });
+
+  })
 });
