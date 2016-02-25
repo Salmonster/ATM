@@ -2,15 +2,19 @@
 -- Table 'pins'
 -- ---
 
-DROP TABLE IF EXISTS pins;
+-- DROP TABLE IF EXISTS pins;
 
-create table pins(pin varchar(4), id INTEGER PRIMARY KEY AUTOINCREMENT);
+create table pins(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        pin varchar(4), 
+        amount varchar(10)
+        );
 
 -- ---
 -- Default Data
 -- ---
 
-insert into pins (pin) values ("1111");
-insert into pins (pin) values ("2222");
-insert into pins (pin) values ("3333");
-insert into pins (pin) values ("4444");
+insert into pins (pin, amount) values ("1111", "75000");
+insert into pins (pin, amount) values ("2222", "77500");
+insert into pins (pin, amount) values ("3333", "80000");
+insert into pins (pin, amount) values ("4444", "85000");

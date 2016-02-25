@@ -1,3 +1,4 @@
+var request = require("superagent");
 
 angular.module("ATM", [])
   // Keeping everything within this module will persist the account balance between controllers
@@ -5,34 +6,65 @@ angular.module("ATM", [])
     $scope.auth = { 
       pin: "",
       verified: false,
-      balance: 80000,
+      balance: "",
       amount: ""
     };
   })
   .controller("submitPin", function($scope, $log) {
-    //For simplicity's sake, I'm hardcoding a PIN of 1111
     $scope.verifyPin = function() {
       $log.log("$scope.auth.pin:", $scope.auth.pin);
-      if ($scope.auth.pin === "1111") {
-        $scope.auth.verified = true;
-      } else {
-        alert("Incorrect PIN");
-      }
+      request.get("/api/balance?pin=" + $scope.auth.pin).end(function(err, res) {
+        if (err) {
+          alert("Sorry, that PIN does not exist.");
+        } else {
+          $scope.$apply(function() {
+            console.log("res.body:", res.body);
+            $scope.auth.balance = res.body.balance;
+            $scope.auth.verified = true;
+            console.log("$scope.auth.verified:", $scope.auth.verified);
+          })
+        }
+      })
     }
   })
   .controller("submitDeposit", function($scope) {
     $scope.deposit = function() {
-      $scope.auth.balance += Number($scope.auth.amount);
-      $scope.auth.amount = "";
+      request.post("/api/transact?pin=" + $scope.auth.pin)
+        .send({ amount: Number($scope.auth.balance) + Number($scope.auth.amount) }).end(function(err, res) {
+        if (err) {
+          alert("Invalid transaction.");
+        } else {
+          $scope.$apply(function() {
+            //Changing the amount in the view in the client instead of doing another db select
+            //query to save time.
+            $scope.auth.balance = Number($scope.auth.balance) + Number($scope.auth.amount);
+            $scope.auth.amount = "";
+          })
+        }
+      })
     }
   })
+  //Potential for refactor: Don't Repeat Yourself, extract the process of sending post requests to the
+  //the server in a separate function for submitDeposit and submitWithdrawal controllers. The latter
+  //could send a negative amount where the former sends a positive amount.
   .controller("submitWithdrawal", function($scope) {
     $scope.withdraw = function() {
       if ($scope.auth.balance - Number($scope.auth.amount) < 0) {
         alert("Insufficient Funds");
-      } else {
-        $scope.auth.balance -= Number($scope.auth.amount);
-      }
-      $scope.auth.amount = "";
+        return;
+      } 
+      request.post("/api/transact?pin=" + $scope.auth.pin)
+        .send({ amount: Number($scope.auth.balance) - Number($scope.auth.amount) }).end(function(err, res) {
+        if (err) {
+          alert("Invalid transaction.");
+        } else {
+          $scope.$apply(function() {
+            //Changing the amount in the view in the client instead of doing another db select
+            //query to save time.
+            $scope.auth.balance = Number($scope.auth.balance) - Number($scope.auth.amount);
+            $scope.auth.amount = "";
+          })
+        }
+      })
     }
   });
