@@ -4,7 +4,7 @@
 
 DROP TABLE IF EXISTS pins;
 
-create table pins(pin varchar(4), INTEGER PRIMARY KEY AUTOINCREMENT);
+create table pins(pin varchar(4), id INTEGER PRIMARY KEY AUTOINCREMENT);
 
 -- ---
 -- Default Data
