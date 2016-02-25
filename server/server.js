@@ -1,10 +1,9 @@
 var express = require("express");
 var Path = require("path");
 var routes = express.Router();
+var db = require("../src/config");
 
-//
-// Example endpoint (also tested in spec/server/index_test.js)
-//
+
 // routes.get("/api/tags-example", function(req, res) {
 //   res.send(["node", "express"])
 // })
@@ -12,32 +11,24 @@ var routes = express.Router();
 //
 // Static assets (html, etc.)
 //
-var assetFolder = Path.resolve(__dirname, "..");
+var assetFolder = Path.resolve(__dirname, "../");
 routes.use(express.static(assetFolder));
 
+// The Catch-all Route
+//
+routes.get("/*", function(req, res){
+  res.sendFile( assetFolder + "/index.html" );
+})
 
-if (process.env.NODE_ENV !== "test") {
-  //
-  // The Catch-all Route
-  //
-  routes.get("/*", function(req, res){
-    res.sendFile( assetFolder + "/index.html" );
-  })
+var app = express();
 
-  var app = express();
+// Parse incoming request bodies as JSON
+// app.use( require("body-parser").json() )
 
-  // Parse incoming request bodies as JSON
-  // app.use( require("body-parser").json() )
+// Mount our main router
+app.use("/", routes)
 
-  // Mount our main router
-  app.use("/", routes)
-
-  // Start the server
-  var port = process.env.PORT || 4000;
-  app.listen(port);
-  console.log("Listening on port", port);
-}
-else {
-  // We're in test mode, make this file importable instead
-  module.exports = routes;
-}
+// Start the server
+var port = process.env.PORT || 4000;
+app.listen(port);
+console.log("Listening on port", port);

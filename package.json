@@ -8,13 +8,17 @@
   "main": "server/server.js",
   "scripts": {
     "start": "./node_modules/.bin/nodemon server/server.js",
-    "test": "./spec/run.sh"
+    "test": "node ./server/server.js & ./node_modules/.bin/mocha spec/DBspec.js",
+    "postinstall": "cat ./src/schema.sql | sqlite3 ATM.db"
   },
   "author": "Salman Oskooi <soskooi@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.14.1",
-    "express": "^4.12.4"
+    "express": "^4.12.4",
+    "knex": "^0.10.0",
+    "request": "^2.69.0",
+    "sqlite3": "^3.1.1"
   },
   "devDependencies": {
     "chai": "^3.4.0",
