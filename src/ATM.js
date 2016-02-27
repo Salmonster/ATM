@@ -1,68 +1,55 @@
-var request = require("superagent");
-
 angular.module("ATM", [])
-  // Keeping everything within this module will persist the account balance between controllers
-  .controller("transact", function($scope) {
+  //The following controller has higher level scope in the html so its variables are accessible to the
+  //other controllers.
+  .controller("transact", function($scope, $http) {
     $scope.auth = { 
       pin: "",
       verified: false,
       balance: "",
       amount: ""
     };
+    //Use one function for both deposits and withdrawals.
+    $scope.transact = function(amount) {
+      if ($scope.auth.balance + amount < 0) {
+        alert("Insufficient Funds");
+        return;
+      }
+      $http.post("/api/transact?pin=" + $scope.auth.pin, { transaction: Number($scope.auth.balance) + amount })
+        .then(
+        function successCallback(res) {
+          //Changing the amount in the view in the client instead of doing another db select
+          //query to save time.
+          $scope.auth.balance = Number($scope.auth.balance) + amount;
+          $scope.auth.amount = "";
+        },
+        function errorCallback(err) {
+          alert("Invalid transaction.");
+        })
+      }
   })
-  .controller("submitPin", function($scope, $log) {
+  .controller("submitPin", function($scope, $log, $http) {
     $scope.verifyPin = function() {
       $log.log("$scope.auth.pin:", $scope.auth.pin);
-      request.get("/api/balance?pin=" + $scope.auth.pin).end(function(err, res) {
-        if (err) {
-          alert("Sorry, that PIN does not exist.");
-        } else {
-          $scope.$apply(function() {
-            $scope.auth.balance = res.body.balance;
-            $scope.auth.verified = true;
-          })
-        }
+      $http({
+        method: "GET",
+        url: "/api/balance?pin=" + $scope.auth.pin
+      }).then(
+      function successCallback(res) {
+        $scope.auth.balance = res.data.balance;
+        $scope.auth.verified = true;
+      },
+      function errorCallback(err) {
+        alert("Sorry, that PIN does not exist.");
       })
     }
   })
   .controller("submitDeposit", function($scope) {
     $scope.deposit = function() {
-      request.post("/api/transact?pin=" + $scope.auth.pin)
-        .send({ amount: Number($scope.auth.balance) + Number($scope.auth.amount) }).end(function(err, res) {
-        if (err) {
-          alert("Invalid transaction.");
-        } else {
-          $scope.$apply(function() {
-            //Changing the amount in the view in the client instead of doing another db select
-            //query to save time.
-            $scope.auth.balance = Number($scope.auth.balance) + Number($scope.auth.amount);
-            $scope.auth.amount = "";
-          })
-        }
-      })
+      $scope.transact(Number($scope.auth.amount));
     }
   })
-  //Potential for refactor: Don't Repeat Yourself, extract the process of sending post requests to the
-  //the server in a separate function for submitDeposit and submitWithdrawal controllers. The latter
-  //could send a negative amount where the former sends a positive amount.
   .controller("submitWithdrawal", function($scope) {
     $scope.withdraw = function() {
-      if ($scope.auth.balance - Number($scope.auth.amount) < 0) {
-        alert("Insufficient Funds");
-        return;
-      } 
-      request.post("/api/transact?pin=" + $scope.auth.pin)
-        .send({ amount: Number($scope.auth.balance) - Number($scope.auth.amount) }).end(function(err, res) {
-        if (err) {
-          alert("Invalid transaction.");
-        } else {
-          $scope.$apply(function() {
-            //Changing the amount in the view in the client instead of doing another db select
-            //query to save time.
-            $scope.auth.balance = Number($scope.auth.balance) - Number($scope.auth.amount);
-            $scope.auth.amount = "";
-          })
-        }
-      })
+      $scope.transact(Number("-" + $scope.auth.amount));
     }
   });

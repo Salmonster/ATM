@@ -2,10 +2,14 @@ var expect = require("chai").expect;
 var request = require("request");
 var testDB = require("./testconfig");
 var server = require("../server/server");
+var fs = require("fs");
+
+//For back-end testing I needed to require other modules (such as the server), so this had to be
+//done separately from the karma testing suite.
 
 var app;
 
-describe("", function() {
+describe("Unit tests for Angular ATM", function() {
 
   before(function() {
     app = server(testDB);
@@ -13,6 +17,8 @@ describe("", function() {
 
   after(function() {
     app.close();
+    //Delete the test database created by the test script in package.json.
+    fs.unlink("test.db", function() { console.log("Test complete.") });
   })
 
   describe("Check account balance", function(){
@@ -29,12 +35,12 @@ describe("", function() {
           .asCallback(function(err, rows) {
             console.log("rows:", rows);
             console.log("body:", body);
+            //The amount queried from the db directly and the amount received from the http request
+            //should be the same.
             expect(rows[0].amount).to.equal(JSON.parse(body).balance);
             done();
           })
       });
     });
-
-
   })
 });

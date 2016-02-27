@@ -7,7 +7,7 @@ var browserify = require("browserify-middleware");
 var runServer = function(db) {
   routes.get("/app-bundle.js", browserify("./src/ATM.js"));
 
-  // Static assets (html, etc.)
+  // Default path for static assets (html, etc.)
   var assetFolder = Path.resolve(__dirname, "../");
   routes.use(express.static(assetFolder));
 
@@ -29,7 +29,7 @@ var runServer = function(db) {
   })
 
   routes.post("/api/transact", function(req, res) {
-    db.update("amount", req.body.amount)
+    db.update("amount", req.body.transaction)
       .from("pins")
       .where("pin", "=", req.query.pin)
       .asCallback(function(err, rows) {
@@ -42,12 +42,16 @@ var runServer = function(db) {
       })
   })
 
+  routes.get("/test", function(req, res){
+    res.sendFile( assetFolder + "/spec/SpecRunner.html" );
+  })
+
   // The Catch-all Route
   routes.get("/*", function(req, res){
     res.sendFile( assetFolder + "/index.html" );
   })
 
-  // Create our Express instance then mount our main router using routes defined above
+  // Create our Express instance then mount our main router using routes defined above.
   var app = express();
   app.use("/", routes);
 
