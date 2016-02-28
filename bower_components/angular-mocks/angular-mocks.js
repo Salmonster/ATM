@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.5.1-build.4646+sha.32feb2b
+ * @license AngularJS v1.5.0
  * (c) 2010-2016 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -134,12 +134,12 @@ angular.mock.$Browser = function() {
 };
 angular.mock.$Browser.prototype = {
 
-  /**
-   * @name $browser#poll
-   *
-   * @description
-   * run all fns in pollFns
-   */
+/**
+  * @name $browser#poll
+  *
+  * @description
+  * run all fns in pollFns
+  */
   poll: function poll() {
     angular.forEach(this.pollFns, function(pollFn) {
       pollFn();
@@ -552,7 +552,7 @@ angular.mock.$IntervalProvider = function() {
  * This directive should go inside the anonymous function but a bug in JSHint means that it would
  * not be enacted early enough to prevent the warning.
  */
-var R_ISO8061_STR = /^(-?\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?:\:?(\d\d)(?:\:?(\d\d)(?:\.(\d{3}))?)?)?(Z|([+-])(\d\d):?(\d\d)))?$/;
+var R_ISO8061_STR = /^(\d{4})-?(\d\d)-?(\d\d)(?:T(\d\d)(?:\:?(\d\d)(?:\:?(\d\d)(?:\.(\d{3}))?)?)?(Z|([+-])(\d\d):?(\d\d)))?$/;
 
 function jsonStringToDate(string) {
   var match;
@@ -578,7 +578,7 @@ function toInt(str) {
   return parseInt(str, 10);
 }
 
-function padNumberInMock(num, digits, trim) {
+function padNumber(num, digits, trim) {
   var neg = '';
   if (num < 0) {
     neg =  '-';
@@ -727,13 +727,13 @@ angular.mock.TzDate = function(offset, timestamp) {
   // provide this method only on browsers that already have it
   if (self.toISOString) {
     self.toISOString = function() {
-      return padNumberInMock(self.origDate.getUTCFullYear(), 4) + '-' +
-            padNumberInMock(self.origDate.getUTCMonth() + 1, 2) + '-' +
-            padNumberInMock(self.origDate.getUTCDate(), 2) + 'T' +
-            padNumberInMock(self.origDate.getUTCHours(), 2) + ':' +
-            padNumberInMock(self.origDate.getUTCMinutes(), 2) + ':' +
-            padNumberInMock(self.origDate.getUTCSeconds(), 2) + '.' +
-            padNumberInMock(self.origDate.getUTCMilliseconds(), 3) + 'Z';
+      return padNumber(self.origDate.getUTCFullYear(), 4) + '-' +
+            padNumber(self.origDate.getUTCMonth() + 1, 2) + '-' +
+            padNumber(self.origDate.getUTCDate(), 2) + 'T' +
+            padNumber(self.origDate.getUTCHours(), 2) + ':' +
+            padNumber(self.origDate.getUTCMinutes(), 2) + ':' +
+            padNumber(self.origDate.getUTCSeconds(), 2) + '.' +
+            padNumber(self.origDate.getUTCMilliseconds(), 3) + 'Z';
     };
   }
 
@@ -1328,8 +1328,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
   }
 
   // TODO(vojta): change params to: method, url, data, headers, callback
-  function $httpBackend(method, url, data, callback, headers, timeout, withCredentials, responseType) {
-
+  function $httpBackend(method, url, data, callback, headers, timeout, withCredentials) {
     var xhr = new MockXhr(),
         expectation = expectations[0],
         wasExpected = false;
@@ -1393,7 +1392,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
           // if $browser specified, we do auto flush all requests
           ($browser ? $browser.defer : responsesPush)(wrapResponse(definition));
         } else if (definition.passThrough) {
-          $delegate(method, url, data, callback, headers, timeout, withCredentials, responseType);
+          $delegate(method, url, data, callback, headers, timeout, withCredentials);
         } else throw new Error('No response defined !');
         return;
       }
@@ -2096,12 +2095,10 @@ angular.mock.$RAFDecorator = ['$delegate', function($delegate) {
 /**
  *
  */
-var originalRootElement;
 angular.mock.$RootElementProvider = function() {
-  this.$get = ['$injector', function($injector) {
-    originalRootElement = angular.element('<div ng-app></div>').data('$injector', $injector);
-    return originalRootElement;
-  }];
+  this.$get = function() {
+    return angular.element('<div ng-app></div>');
+  };
 };
 
 /**
@@ -2130,7 +2127,7 @@ angular.mock.$RootElementProvider = function() {
  *
  * myMod.controller('MyDirectiveController', ['$log', function($log) {
  *   $log.info(this.name);
- * }]);
+ * })];
  *
  *
  * // In a test ...
@@ -2140,7 +2137,7 @@ angular.mock.$RootElementProvider = function() {
  *     var ctrl = $controller('MyDirectiveController', { /* no locals &#42;/ }, { name: 'Clark Kent' });
  *     expect(ctrl.name).toEqual('Clark Kent');
  *     expect($log.info.logs).toEqual(['Clark Kent']);
- *   }));
+ *   });
  * });
  *
  * ```
@@ -2192,27 +2189,29 @@ angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
  * @return {Object} Instance of requested controller.
  */
 angular.mock.$ComponentControllerProvider = ['$compileProvider', function($compileProvider) {
-  this.$get = ['$controller','$injector', function($controller,$injector) {
-    return function $componentController(componentName, locals, bindings, ident) {
-      // get all directives associated to the component name
-      var directives = $injector.get(componentName + 'Directive');
-      // look for those directives that are components
-      var candidateDirectives = directives.filter(function(directiveInfo) {
-        // components have controller, controllerAs and restrict:'E'
-        return directiveInfo.controller && directiveInfo.controllerAs && directiveInfo.restrict === 'E';
-      });
-      // check if valid directives found
-      if (candidateDirectives.length === 0) {
-        throw new Error('No component found');
-      }
-      if (candidateDirectives.length > 1) {
-        throw new Error('Too many components found');
-      }
-      // get the info of the component
-      var directiveInfo = candidateDirectives[0];
-      return $controller(directiveInfo.controller, locals, bindings, ident || directiveInfo.controllerAs);
-    };
-  }];
+  return {
+    $get: ['$controller','$injector', function($controller,$injector) {
+      return function $componentController(componentName, locals, bindings, ident) {
+        // get all directives associated to the component name
+        var directives = $injector.get(componentName + 'Directive');
+        // look for those directives that are components
+        var candidateDirectives = directives.filter(function(directiveInfo) {
+          // components have controller, controllerAs and restrict:'E'
+          return directiveInfo.controller && directiveInfo.controllerAs && directiveInfo.restrict === 'E';
+        });
+        // check if valid directives found
+        if (candidateDirectives.length === 0) {
+          throw new Error('No component found');
+        }
+        if (candidateDirectives.length > 1) {
+          throw new Error('Too many components found');
+        }
+        // get the info of the component
+        var directiveInfo = candidateDirectives[0];
+        return $controller(directiveInfo.controller, locals, bindings, ident || directiveInfo.controllerAs);
+      };
+    }]
+  };
 }];
 
 
@@ -2586,7 +2585,6 @@ if (window.jasmine || window.mocha) {
 
 
   (window.beforeEach || window.setup)(function() {
-    originalRootElement = null;
     annotatedFunctions = [];
     currentSpec = this;
   });
@@ -2610,19 +2608,8 @@ if (window.jasmine || window.mocha) {
     currentSpec = null;
 
     if (injector) {
-      // Ensure `$rootElement` is instantiated, before checking `originalRootElement`
-      var $rootElement = injector.get('$rootElement');
-      var rootNode = $rootElement && $rootElement[0];
-      var cleanUpNodes = !originalRootElement ? [] : [originalRootElement[0]];
-      if (rootNode && (!originalRootElement || rootNode !== originalRootElement[0])) {
-        cleanUpNodes.push(rootNode);
-      }
-      angular.element.cleanData(cleanUpNodes);
-
-      // Ensure `$destroy()` is available, before calling it
-      // (a mocked `$rootScope` might not implement it (or not even be an object at all))
-      var $rootScope = injector.get('$rootScope');
-      if ($rootScope && $rootScope.$destroy) $rootScope.$destroy();
+      injector.get('$rootElement').off();
+      injector.get('$rootScope').$destroy();
     }
 
     // clean up jquery's fragment cache
@@ -2669,11 +2656,11 @@ if (window.jasmine || window.mocha) {
         var fn, modules = currentSpec.$modules || (currentSpec.$modules = []);
         angular.forEach(moduleFns, function(module) {
           if (angular.isObject(module) && !angular.isArray(module)) {
-            fn = ['$provide', function($provide) {
+            fn = function($provide) {
               angular.forEach(module, function(value, key) {
                 $provide.value(key, value);
               });
-            }];
+            };
           } else {
             fn = module;
           }
@@ -2794,9 +2781,9 @@ if (window.jasmine || window.mocha) {
     function workFn() {
       var modules = currentSpec.$modules || [];
       var strictDi = !!currentSpec.$injectorStrict;
-      modules.unshift(['$injector', function($injector) {
+      modules.unshift(function($injector) {
         currentSpec.$providerInjector = $injector;
-      }]);
+      });
       modules.unshift('ngMock');
       modules.unshift('ng');
       var injector = currentSpec.$injector;

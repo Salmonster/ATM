@@ -1,6 +1,6 @@
 angular.module("ATM", [])
-  //The following controller has higher level scope in the html so its variables are accessible to the
-  //other controllers.
+  // The transact controller has higher level scope in the html so its variables are accessible to the
+  // other controllers.
   .controller("transact", function($scope, $http) {
     $scope.auth = { 
       pin: "",
@@ -8,28 +8,30 @@ angular.module("ATM", [])
       balance: "",
       amount: ""
     };
-    //Use one function for both deposits and withdrawals.
+    // Use one function for both deposits and withdrawals.
     $scope.transact = function(amount) {
-      if ($scope.auth.balance + amount < 0) {
+      if (Number($scope.auth.balance) + amount < 0) {
         alert("Insufficient Funds");
+        $scope.auth.amount = "";
         return;
       }
       $http.post("/api/transact?pin=" + $scope.auth.pin, { transaction: Number($scope.auth.balance) + amount })
         .then(
         function successCallback(res) {
-          //Changing the amount in the view in the client instead of doing another db select
-          //query to save time.
+          // Changing the balance for the view in the client instead of doing another db select query
+          // to save time.
           $scope.auth.balance = Number($scope.auth.balance) + amount;
           $scope.auth.amount = "";
         },
         function errorCallback(err) {
           alert("Invalid transaction.");
+          $scope.auth.amount = "";
         })
       }
   })
   .controller("submitPin", function($scope, $log, $http) {
     $scope.verifyPin = function() {
-      $log.log("$scope.auth.pin:", $scope.auth.pin);
+      $log.log("User entered PIN:", $scope.auth.pin);
       $http({
         method: "GET",
         url: "/api/balance?pin=" + $scope.auth.pin
@@ -40,6 +42,7 @@ angular.module("ATM", [])
       },
       function errorCallback(err) {
         alert("Sorry, that PIN does not exist.");
+        $scope.auth.pin = "";
       })
     }
   })

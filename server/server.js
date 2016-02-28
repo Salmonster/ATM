@@ -5,6 +5,7 @@ var browserify = require("browserify-middleware");
 
 
 var runServer = function(db) {
+  // No need to browserify, but at one point I was requiring modules from ATM.js and needed it.
   routes.get("/app-bundle.js", browserify("./src/ATM.js"));
 
   // Default path for static assets (html, etc.)
@@ -25,8 +26,8 @@ var runServer = function(db) {
         } else {
           res.json({balance: rows[0].amount});
         }
-      })
-  })
+      });
+  });
 
   routes.post("/api/transact", function(req, res) {
     db.update("amount", req.body.transaction)
@@ -39,17 +40,13 @@ var runServer = function(db) {
         } else {
           res.sendStatus(200);
         }
-      })
-  })
-
-  routes.get("/test", function(req, res){
-    res.sendFile( assetFolder + "/spec/SpecRunner.html" );
-  })
+      });
+  });
 
   // The Catch-all Route
   routes.get("/*", function(req, res){
     res.sendFile( assetFolder + "/index.html" );
-  })
+  });
 
   // Create our Express instance then mount our main router using routes defined above.
   var app = express();

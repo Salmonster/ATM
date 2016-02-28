@@ -8,13 +8,14 @@
   "main": "server/productionServer.js",
   "scripts": {
     "start": "./node_modules/.bin/nodemon server/productionServer.js",
-    "test": "cat ./src/schema.sql | sqlite3 test.db && ./node_modules/.bin/mocha spec/DBspec.js",
-    "postinstall": "cat ./src/schema.sql | sqlite3 ATM.db"
+    "test": "cat ./src/schema.sql | sqlite3 test.db && ./node_modules/.bin/mocha spec/DBspec.js && karma start --single-run",
+    "postinstall": "./node_modules/.bin/bower install && cat ./src/schema.sql | sqlite3 ATM.db"
   },
   "author": "Salman Oskooi <soskooi@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.0",
+    "bower": "^1.7.7",
     "browserify-middleware": "^7.0.0",
     "express": "^4.12.4",
     "knex": "^0.10.0",
@@ -28,6 +29,7 @@
     "karma-mocha": "^0.2.2",
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-sinon-chai": "^1.2.0",
+    "karma-spec-reporter": "0.0.24",
     "lolex": "^1.4.0",
     "mocha": "^2.3.3",
     "phantomjs-prebuilt": "^2.1.4",
@@ -37,10 +39,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Salmonster/ATM"
+    "url": "https://github.com/Salmonster/Angular_ATM"
   },
   "bugs": {
-    "url": "https://github.com/Salmonster/ATM/issues"
+    "url": "https://github.com/Salmonster/Angular_ATM/issues"
   },
-  "homepage": "https://github.com/Salmonster/ATM"
+  "homepage": "https://github.com/Salmonster/Angular_ATM"
 }

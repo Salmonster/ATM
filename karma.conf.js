@@ -5,19 +5,19 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: "",
 
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'sinon-chai'],
+    frameworks: ["mocha", "sinon-chai"],
 
     // list of files / patterns to load in the browser
     files: [
-      'src/angular.min.js',
-      'spec/angular-mocks.js',
-      'src/ATM.js',
-      'spec/AngularSpec.js'
+      "bower_components/angular/angular.js",
+      "bower_components/angular-mocks/angular-mocks.js",
+      "src/ATM.js",
+      "spec/AngularSpec.js"
     ],
 
 
@@ -32,10 +32,11 @@ module.exports = function(config) {
     },
 
 
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
+    // test results reporter to use 
+    // MUST ADD "spec" AFTER INSTALLING KARMA-SPEC-REPORTER FOR PROPER RESULT REPORTING!!!
+    // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ["progress", "spec"],
 
 
     // web server port
@@ -57,7 +58,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    browsers: ["PhantomJS"],
 
 
     // Continuous Integration mode
