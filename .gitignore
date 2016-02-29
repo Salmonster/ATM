@@ -1,4 +1,5 @@
-node_modules
 bower_components
-ATM.db
+coverage
+node_modules
 *.log
+ATM.db

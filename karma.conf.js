@@ -29,14 +29,21 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+        "src/ATM.js": ["coverage"]
     },
 
 
     // test results reporter to use 
-    // MUST ADD "spec" AFTER INSTALLING KARMA-SPEC-REPORTER FOR PROPER RESULT REPORTING!!!
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress", "spec"],
+    reporters: ["progress", "spec", "coverage"],
+
+
+    coverageReporter: {
+      type : "html",
+      dir : "coverage",
+      subdir : "."
+    },
 
 
     // web server port

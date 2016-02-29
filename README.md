@@ -8,4 +8,4 @@ Clone the repo, cd into the root directory in your terminal and run "npm install
 
 ## Testing
 
-To run the test suite, exit the server and run "npm test".
+To run the test suite, exit the server and run "npm test". In addition to the test results in the terminal, you will notice in the repo's root directory a folder named "coverage". If you open the html files contained therein you will see the karma-coverage reports for code coverage.

@@ -82,6 +82,19 @@ describe("Angular ATM", function() {
       transactSpy.restore();
     });
 
+    it("should not update the balance in the event of a server error", function() {
+      console.log("It should not update the balance in the event of a server error");
+      $rootScope.auth = { balance: "80000", pin: 1111, amount: 5000 };
+      $httpBackend.when("POST", "/api/transact?pin=1111", {transaction: 85000}).respond(500);
+      // Spy on the function we're interested in to ensure callback.
+      var alertSpy = sinon.spy(window, "alert");
+      $rootScope.transact($rootScope.auth.amount);
+      $httpBackend.flush();
+      $rootScope.auth.balance.should.equal("80000");
+      expect(window.alert).to.be.called;
+      alertSpy.restore();
+    });
+
     it("should update the balance when valid deposit or withdrawal is performed", function() {
       console.log("It should update the balance upon valid deposit or withdrawal.");
       $rootScope.auth = { balance: "80000", pin: 1111, amount: 5000 };
