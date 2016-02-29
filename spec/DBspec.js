@@ -19,6 +19,21 @@ describe("Unit tests for Angular ATM", function() {
     fs.unlink("test.db", function() { console.log("Test complete.") });
   });
 
+  describe("Navigating to ATM site", function() {
+
+    it("should redirect you there no matter the URL path extension", function(done) {
+      var options = {
+        "method": "GET",
+        "uri": "http://localhost:4000/monkeybusiness",
+      };
+
+      request(options, function(error, res, body) {
+        expect(res.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
   describe("Check account balance", function() {
 
     it("accepts a PIN to retrieve associated account balance", function(done) {
@@ -38,6 +53,18 @@ describe("Unit tests for Angular ATM", function() {
             expect(rows[0].amount).to.equal(JSON.parse(body).balance);
             done();
           });
+      });
+    });
+
+    it("returns an error for an incorrect PIN", function(done) {
+      var options = {
+        "method": "GET",
+        "uri": "http://localhost:4000/api/balance?pin=1234",
+      };
+
+      request(options, function(error, res, body) {
+        expect(res.statusCode).to.equal(400);
+        done();
       });
     });
   });
@@ -61,6 +88,22 @@ describe("Unit tests for Angular ATM", function() {
             expect(rows[0].amount).to.equal("100000");
             done();
           });
+      });
+    });
+
+    it("returns an error for an invalid deposit or withdrawal", function(done) {
+      var options = {
+        "method": "POST",
+        // Incorrect PIN on post request
+        "uri": "http://localhost:4000/api/transact?pin=1234",
+        "json": {
+            "transaction": "100000"
+        }
+      };
+
+      request(options, function(error, res, body) {
+        expect(res.statusCode).to.equal(400);
+        done();
       });
     });
   });

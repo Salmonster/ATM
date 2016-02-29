@@ -20,7 +20,8 @@ var runServer = function(db) {
       .from("pins")
       .where("pin", "=", req.query.pin)
       .asCallback(function(err, rows) {
-        if (err || !rows.length) {
+        // DB doesn't throw error on bad request, so measuring lack of response here.
+        if (!rows.length) {
           res.status(400);
           res.json({Error: err});
         } else {
@@ -34,7 +35,8 @@ var runServer = function(db) {
       .from("pins")
       .where("pin", "=", req.query.pin)
       .asCallback(function(err, rows) {
-        if (err) {
+        // DB responds with rows = 0 for error on update, rows = 1 for valid update requests.
+        if (rows === 0) {
           res.status(400);
           res.json({Error: err});
         } else {

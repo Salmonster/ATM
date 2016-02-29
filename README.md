@@ -1,6 +1,6 @@
 # Angular ATM
 
-A very simple automated teller machine implementation with front-end and back-end test suite. Only accepts the PINS 1111, 2222, 3333, and 4444. Supports deposits and withdrawals. The tech stack is AngularJS, Node, Express, and a SQLite database. The test suite uses Karma, PhantomJS, Mocha, Chai, and Sinon.
+A very simple automated teller machine implementation with front-end and back-end test suite. Only accepts the PINS 1111, 2222, 3333, and 4444. Supports deposits and withdrawals. The tech stack is AngularJS, Node, Express, and a SQLite database. The test suite uses Karma, PhantomJS, Mocha, Chai, Sinon, and Istanbul.
 
 ## Installation
 
@@ -8,4 +8,4 @@ Clone the repo, cd into the root directory in your terminal and run "npm install
 
 ## Testing
 
-To run the test suite, exit the server and run "npm test". In addition to the test results in the terminal, you will notice in the repo's root directory a folder named "coverage". If you open the html files contained therein you will see the karma-coverage reports for code coverage.
+To run the test suite, exit the server and run "npm test". In addition to the test results in the terminal, you will notice in the repo's root directory a new folder named "coverage". If you open the html files contained therein you will see the Karma-coverage and Istanbul reports for code coverage.
