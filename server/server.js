@@ -22,7 +22,7 @@ var runServer = function(db) {
       .asCallback(function(err, rows) {
         // DB doesn't throw error on bad request, so measuring lack of response here.
         if (!rows.length) {
-          res.status(400);
+          res.status(404);
           res.json({Error: err});
         } else {
           res.json({balance: rows[0].amount});

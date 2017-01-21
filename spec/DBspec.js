@@ -63,7 +63,7 @@ describe("Unit tests for Angular ATM", function() {
       };
 
       request(options, function(error, res, body) {
-        expect(res.statusCode).to.equal(400);
+        expect(res.statusCode).to.equal(404);
         done();
       });
     });

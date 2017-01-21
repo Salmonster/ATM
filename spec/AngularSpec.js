@@ -45,7 +45,7 @@ describe("Angular ATM", function() {
       console.log("It should alert that a PIN doesn't exist when not matched in the database.");
       var scope = { auth: { pin: 1234, verified: false, balance: "" } };
       $controller("submitPin", {"$scope" : scope });
-      $httpBackend.expectGET("/api/balance?pin=1234").respond(500, "");
+      $httpBackend.expectGET("/api/balance?pin=1234").respond(404, "");
       // Spy on the function we're interested in to ensure callback.
       var alertSpy = sinon.spy(window, "alert");
       scope.verifyPin();
